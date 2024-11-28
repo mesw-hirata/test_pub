@@ -1,0 +1,35 @@
+name: Restrict Issue Creation
+
+on:
+  issues:
+    types: [opened]
+
+jobs:
+  restrict_issue_creation:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Check Issue Labels
+      uses: actions/github-script@v4
+      with:
+        script: |
+          const issue = context.payload.issue;
+          const restrictedLabel = 'draft'; // 制限したいラベル名
+
+          // Issueに制限されたラベルが付いているか確認
+          if (issue.labels.some(label => label.name === restrictedLabel)) {
+            // Issueをクローズ
+            await github.issues.update({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: issue.number,
+              state: 'closed'
+            });
+
+            // Issueをクローズした理由をコメント
+            await github.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: issue.number,
+              body: `This issue has been closed because it contains the restricted label: ${restrictedLabel}.`
+            });
+          }
