@@ -30,6 +30,6 @@ jobs:
             repo: repo,
             issue_number: issue_number,
             body: `<!-- saved-state -->
-Title: ${issue.data.title}
-Body: ${issue.data.body}`
+            Title: ${issue.data.title}
+            Body: ${issue.data.body}`
           });
