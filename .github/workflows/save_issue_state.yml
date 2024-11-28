@@ -6,10 +6,10 @@ on:
 
 jobs:
   save_state:
-    if: github.event.label.name == 'Done' || github.event.action == 'closed'
     runs-on: ubuntu-latest
     steps:
     - name: Save Issue State
+      if: ${{ github.event.label.name == 'Done' || github.event.action == 'closed' }}
       uses: actions/github-script@v4
       with:
         script: |
