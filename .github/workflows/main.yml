@@ -13,7 +13,6 @@ jobs:
       uses: actions/github-script@v4
       with:
         script: |
-          console.log('Label added:', context.payload.label.name);
           const issue_number = context.issue.number;
           const owner = context.repo.owner;
           const repo = context.repo.repo;
