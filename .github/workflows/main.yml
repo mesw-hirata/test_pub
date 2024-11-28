@@ -1,0 +1,28 @@
+name: Lock Done Issues
+
+on:
+  issues:
+    types: [labeled]
+
+jobs:
+  lock_issue:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Check if the issue is labeled as Done
+      if: github.event.label.name == 'Done'
+      uses: actions/github-script@v4
+      with:
+        script: |
+          console.log('Label added:', context.payload.label.name);
+          const issue_number = context.issue.number;
+          const owner = context.repo.owner;
+          const repo = context.repo.repo;
+
+          console.log('Locking issue:', issue_number);
+          // Lock the issue
+          await github.issues.lock({
+            owner: owner,
+            repo: repo,
+            issue_number: issue_number
+          });
+          console.log('Issue locked:', issue_number);
