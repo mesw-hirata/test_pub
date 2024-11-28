@@ -1,15 +1,14 @@
-name: Lock Done Issues
+name: Lock Closed Issues
 
 on:
   issues:
-    types: [labeled]
+    types: [closed]
 
 jobs:
   lock_issue:
     runs-on: ubuntu-latest
     steps:
-    - name: Check if the issue is labeled as Done
-      if: github.event.label.name == 'Done'
+    - name: Lock closed issue
       uses: actions/github-script@v4
       with:
         script: |
