@@ -1,0 +1,35 @@
+name: Save Issue State
+
+on:
+  issues:
+    types: [closed, labeled]
+
+jobs:
+  save_state:
+    if: github.event.label.name == 'Done' || github.event.action == 'closed'
+    runs-on: ubuntu-latest
+    steps:
+    - name: Save Issue State
+      uses: actions/github-script@v4
+      with:
+        script: |
+          const issue_number = context.issue.number;
+          const owner = context.repo.owner;
+          const repo = context.repo.repo;
+
+          // Issueの状態を取得
+          const issue = await github.issues.get({
+            owner: owner,
+            repo: repo,
+            issue_number: issue_number
+          });
+
+          // Issueのタイトルと説明をコメントとして保存
+          await github.issues.createComment({
+            owner: owner,
+            repo: repo,
+            issue_number: issue_number,
+            body: `<!-- saved-state -->
+Title: ${issue.data.title}
+Body: ${issue.data.body}`
+          });
