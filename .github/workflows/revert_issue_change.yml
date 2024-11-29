@@ -36,30 +36,37 @@ jobs:
           if (savedStateComment) {
             // 保存された状態を解析
             const savedState = savedStateComment.body.match(/Title: (.*)\nBody: ([\s\S]*)/);
-            const savedTitle = savedState[1];
-            const savedBody = savedState[2];
 
-            // 現在のタイトルと説明を取得
-            const currentTitle = issue.data.title;
-            const currentBody = issue.data.body;
+            if (savedState) {
+              const savedTitle = savedState[1];
+              const savedBody = savedState[2];
 
-            // タイトルが変更された場合、元に戻す
-            if (currentTitle !== savedTitle) {
-              await github.issues.update({
-                owner: owner,
-                repo: repo,
-                issue_number: issue_number,
-                title: savedTitle
-              });
+              // 現在のタイトルと説明を取得
+              const currentTitle = issue.data.title;
+              const currentBody = issue.data.body;
+
+              // タイトルが変更された場合、元に戻す
+              if (currentTitle !== savedTitle) {
+                await github.issues.update({
+                  owner: owner,
+                  repo: repo,
+                  issue_number: issue_number,
+                  title: savedTitle
+                });
+              }
+
+              // 説明が変更された場合、元に戻す
+              if (currentBody !== savedBody) {
+                await github.issues.update({
+                  owner: owner,
+                  repo: repo,
+                  issue_number: issue_number,
+                  body: savedBody
+                });
+              }
+            } else {
+              console.log('Saved state format is incorrect.');
             }
-
-            // 説明が変更された場合、元に戻す
-            if (currentBody !== savedBody) {
-              await github.issues.update({
-                owner: owner,
-                repo: repo,
-                issue_number: issue_number,
-                body: savedBody
-              });
-            }
+          } else {
+            console.log('No saved state comment found.');
           }
