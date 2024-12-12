@@ -1,0 +1,11 @@
+---
+name: 子Issue
+about: 子Issueを作成するためのテンプレート
+title: ''
+labels: ''
+assignees: ''
+
+---
+
+### 親Issue
+親Issueの番号を記載してください: #123
