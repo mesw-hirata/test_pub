@@ -1,0 +1,16 @@
+name: Restrict Issue Status Changeon:issues:types: [edited]
+jobs:restrict_status_change:runs-on: ubuntu-lateststeps:- name: Check if user is authorizedid: check_useruses: actions/github-script@v6with:script: |
+            const authorizedUsers = ['mesw-hirata2'];
+            const issue = context.payload.issue;
+            const user = context.payload.sender.login;
+            if (authorizedUsers.includes(user) && issue.labels.some(label => label.name === 'Approved')) {
+              return { authorized: true };
+            }
+            return { authorized: false };- name: Revert status changeif: steps.check_user.outputs.authorized == 'false'uses: actions/github-script@v6with:script: |
+            const issue_number = context.payload.issue.number;
+            await github.issues.update({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: issue_number,
+              state: 'open'
+            });
