@@ -1,0 +1,38 @@
+name: Lock Issue on Column Change
+
+on:
+  project_card:
+    types: [moved]
+
+jobs:
+  lock_issue:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Check if moved to Approved column
+      id: check_column
+      uses: actions/github-script@v6
+      with:
+        github-token: ${{ secrets.GH_TOKEN }}
+        script: |
+          const column_id = context.payload.project_card.column_id;
+          const column = await github.projects.getColumn({ column_id });
+          return column.data.name === 'Approved';
+
+    - name: Lock Issue
+      if: steps.check_column.outputs.result == 'true'
+      uses: actions/github-script@v6
+      with:
+        github-token: ${{ secrets.GH_TOKEN }}
+        script: |
+          const card_id = context.payload.project_card.id;
+          const card = await github.projects.getCard({ card_id });
+          if (card.data.content_url.includes('/issues/')) {
+            const issue_number = card.data.content_url.split('/').pop();
+            const { owner, repo } = context.repo;
+            await github.issues.lock({
+              owner,
+              repo,
+              issue_number: parseInt(issue_number, 10)
+            });
+          }
