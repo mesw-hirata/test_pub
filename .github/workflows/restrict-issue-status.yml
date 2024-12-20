@@ -12,7 +12,7 @@ jobs:
         uses: actions/github-script@v6
         with:
           script: |
-            const authorizedUsers = ['mesw-hirata2'];
+            const authorizedUsers = ['mesw-hirata'];
             const issue = context.payload.issue;
             const user = context.payload.sender.login;
             if (authorizedUsers.includes(user) && issue.labels.some(label => label.name === 'Approved')) {
